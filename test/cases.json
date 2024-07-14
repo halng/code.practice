@@ -1,0 +1,48 @@
+[
+  {
+    "id": "problem-0",
+    "supported_languages": ["python", "cpp", "go", "java", "rust"],
+    "name": "Sum of two numbers",
+    "description": "Given two numbers, return their sum.",
+    "test-cases":[
+      {
+        "name": "sum of 2 positive number",
+        "input": [1, 2],
+        "output": [3]
+      },
+      {
+        "name": "sum of 2 negative number",
+        "input": [-1, -2],
+        "output": [-3]
+      },
+      {
+        "name": "sum of 1 positive and 1 negative number",
+        "input": [1, -2],
+        "output": [-1]
+      }
+    ]
+  },
+  {
+    "id": "problem-1",
+    "supported_languages": ["python", "cpp", "go", "java", "rust"],
+    "name": "Subtract of two numbers",
+    "description": "Given two numbers, return their subtract.",
+    "test-cases":[
+      {
+        "name": "Given 2 positive number, return their subtract",
+        "input": [1, 2],
+        "output": [-1]
+      },
+      {
+        "name": "Subtract of 2 negative number",
+        "input": [-1, -2],
+        "output": [1]
+      },
+      {
+        "name": "Subtract of 1 positive and 1 negative number",
+        "input": [1, -2],
+        "output": [3]
+      }
+    ]
+  }
+]
