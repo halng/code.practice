@@ -110,7 +110,7 @@ def test_javascript(input, path: str):
 
 if __name__ == "__main__":
     logging.info("Starting test")
-    with open("./test/cases.json", "r") as f:
+    with open("./cases.json", "r") as f:
         test_data = json.load(f)
 
     function_mapping = {

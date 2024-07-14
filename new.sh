@@ -9,6 +9,6 @@ sed -i "1s/.*/$number/" INDEX
 
 # create a new file with the number
 mkdir problem-$number
-cp -r template/* problem-$number
+touch problem-$number/main.cpp problem-$number/main.rs problem-$number/main.py problem-$number/README.md problem-$number/main.go problem-$number/main.java
 
 echo "Created problem-$number"
