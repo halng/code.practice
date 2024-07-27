@@ -2,6 +2,7 @@ import json
 import subprocess
 import logging
 import time
+import os
 
 logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 logging.info("Admin logged in")
@@ -23,14 +24,10 @@ OUTPUT = "output"
 
 RESULT_MAPPING = {True: "PASSED", False: "FAILED"}
 DEFAULT_FILE_NAME = "main"
-EXTENSION_MAPPING = {
-    JAVA: ".java",
-    PYTHON: ".py",
-    CPP: ".cpp",
-    GO: ".go",
-    RUST: ".rs",
-    JAVASCRIPT: ".js",
-}
+EXTENSION_MAPPING = {JAVA: ".java", PYTHON: ".py", CPP: ".cpp", GO: ".go", RUST: ".rs"}
+
+LOGGING_MESSAGE_1 = "PROBLEM: {} | TEST_CASE: {}"
+LOGGING_MESSAGE_2 = "\tLANGUAGE: {} | TOOK: {} | RESULT: {}"
 
 
 def execute(cli):
@@ -38,9 +35,9 @@ def execute(cli):
     return result
 
 
-def test_java(input, path: str):
+def test_java(path: str):
     start_time = time.time()
-    cli = ["java", path] + input.split(" ")
+    cli = ["java", path]
     result = execute(cli)
     end_time = time.time()
     execution_time = end_time - start_time
@@ -48,9 +45,9 @@ def test_java(input, path: str):
     return result, execution_time
 
 
-def test_python(input, path: str):
+def test_python(path: str):
     start_time = time.time()
-    cli = ["python3", path] + input.split(" ")
+    cli = ["python3", path]
     result = execute(cli)
     end_time = time.time()
     execution_time = end_time - start_time
@@ -58,12 +55,12 @@ def test_python(input, path: str):
     return result, execution_time
 
 
-def test_cpp(input, path: str):
+def test_cpp(path: str):
     start_time = time.time()
     output_path = path.replace(".cpp", "")
     cli = ["g++", path, "-o", output_path]
     _ = execute(cli)
-    cli = [output_path] + input.split(" ")
+    cli = [output_path]
     result = execute(cli)
     end_time = time.time()
     execution_time = end_time - start_time
@@ -73,9 +70,9 @@ def test_cpp(input, path: str):
     return result, execution_time
 
 
-def test_go(input, path: str):
+def test_go(path: str):
     start_time = time.time()
-    cli = ["go", "run", path] + input.split(" ")
+    cli = ["go", "run", path]
     result = execute(cli)
     end_time = time.time()
     execution_time = end_time - start_time
@@ -83,12 +80,12 @@ def test_go(input, path: str):
     return result, execution_time
 
 
-def test_rust(input, path: str):
+def test_rust(path: str):
     start_time = time.time()
     output_path = path.replace(".rs", "")
-    cli = ["rustc", path, "-o", output_path ]
+    cli = ["rustc", path, "-o", output_path]
     _ = execute(cli)
-    cli = [output_path] + input.split(" ")
+    cli = [output_path]
     result = execute(cli)
     end_time = time.time()
     cli = ["rm", output_path]
@@ -98,66 +95,70 @@ def test_rust(input, path: str):
     return result, execution_time
 
 
-def test_javascript(input, path: str):
-    start_time = time.time()
-    cli = ["node", path] + input.split(" ")
-    result = execute(cli)
-    end_time = time.time()
-    execution_time = end_time - start_time
-    execution_time = round(execution_time, 5)
-    return result, execution_time
+def get_problem_list():
+    return [
+        folder
+        for folder in os.listdir(".")
+        if os.path.isdir(folder) and str(folder).startswith("problem")
+    ]
+
+
+def create_input(problem, data: str):
+    with open(f"./{problem}/INPUT", "w") as f:
+        f.write(data)
+        f.close()
+
+
+def output_assertion(data_type, expected, output: str = ""):
+    output = output.strip()
+    if data_type == "number":
+        return int(output) == int(expected)
 
 
 if __name__ == "__main__":
     logging.info("Starting test")
-    with open("./cases.json", "r") as f:
-        test_data = json.load(f)
-
     function_mapping = {
         JAVA: test_java,
         PYTHON: test_python,
         CPP: test_cpp,
         GO: test_go,
         RUST: test_rust,
-        JAVASCRIPT: test_javascript,
     }
 
-    for test in test_data:
-        test_cases = test[TEST_CASE]
-        output = {
-           
-        }
+    problems = get_problem_list()
 
-        logging.info("=" * 50)
-        logging.info(f"== ID {test[ID]}")
-        logging.info(f"== NAME: {test[NAME]}")
-        logging.info(f"== DESCRIPTION: {test[DESCRIPTION]}")
-        logging.info(f"== TOTAL: {len(test_cases)} test case(s)")
+    for problem in problems:
+        with open(f"./{problem}/test.json", "r") as f:
+            test_data = json.load(f)
 
-        for language in test[LANGUAGE]:
-            logging.info(f"========== START TEST FOR LANGUAGE: {language} ==========")
-            output[language] = {
-                "PASSED": 0,
-                "FAILED": 0
-            }
-            
-            func = function_mapping[language]
-            for i, case in enumerate(test_cases):
-                test_input = " ".join(map(str, case[INPUT]))
-                test_output = "".join(map(str, case[OUTPUT]))
-                path = f"{test[ID]}/{DEFAULT_FILE_NAME}{EXTENSION_MAPPING[language]}"
-                result, execution_time = func(test_input, path)
+        test_cases = test_data[TEST_CASE]
+        supported_languages = test_data[LANGUAGE]
 
-                final_result = result.strip() == test_output
-
-                logging.info(
-                    f"== TEST CASE: {i+1}: {case[NAME]}: {RESULT_MAPPING[final_result]} takes {execution_time} seconds"
+        for test_case in test_cases:
+            test_name = test_case[NAME]
+            test_input = test_case[INPUT]
+            test_output = test_case[OUTPUT]
+            logging.info(LOGGING_MESSAGE_1.format(problem, test_name))
+            # create INPUT file and put value into it
+            create_input(problem, test_input)
+            for language in supported_languages:
+                path_to_execute_file = (
+                    f"./{problem}/{DEFAULT_FILE_NAME}{EXTENSION_MAPPING[language]}"
                 )
-                if not final_result:
-                    logging.info(f"== EXPECTED: {test_output}")
-                    logging.info(f"== GOT: {result}")
-                    output[language]["FAILED"] +=  1
-                else:
-                    output[language]["PASSED"] += 1
+                _func = function_mapping[language]
+                result, execution_time = _func(path_to_execute_file)
+                assert_result = output_assertion(
+                    test_output["type"], test_output["value"], result
+                )
+                logging.info(
+                    LOGGING_MESSAGE_2.format(
+                        language, execution_time, RESULT_MAPPING[assert_result]
+                    )
+                )
+                if not assert_result:
+                    raise Exception("TEST FAILED")
 
-        logging.info(f"== SUMMARY: {output}")
+    logging.info("Clean up...")
+    for problem in problems:
+        os.remove(f"./{problem}/INPUT")
+

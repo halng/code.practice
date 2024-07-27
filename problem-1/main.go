@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strconv"
@@ -11,21 +12,36 @@ func sub(a, b int) int {
 }
 
 func main() {
-	args := os.Args[1:]
-	if len(args) < 2 {
-		fmt.Println("Please provide two integer arguments.")
+	file, err := os.Open("./problem-1/INPUT")
+	if err != nil {
+		fmt.Println("Failed to open file:", err)
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanWords)
+
+	var a, b int
+	if scanner.Scan() {
+		a, err = strconv.Atoi(scanner.Text())
+		if err != nil {
+			fmt.Println("Invalid argument:", scanner.Text())
+			return
+		}
+	} else {
+		fmt.Println("Failed to read argument a from file")
 		return
 	}
 
-	a, err := strconv.Atoi(args[0])
-	if err != nil {
-		fmt.Println("Invalid argument:", args[0])
-		return
-	}
-
-	b, err := strconv.Atoi(args[1])
-	if err != nil {
-		fmt.Println("Invalid argument:", args[1])
+	if scanner.Scan() {
+		b, err = strconv.Atoi(scanner.Text())
+		if err != nil {
+			fmt.Println("Invalid argument:", scanner.Text())
+			return
+		}
+	} else {
+		fmt.Println("Failed to read argument b from file")
 		return
 	}
 
