@@ -1,7 +1,14 @@
-package practice.leetcode;
+package practice;
 
 import java.util.Arrays;
 
+/**
+ * Source: Codility
+ * <p>
+ * {@code @Link: https://app.codility.com/programmers/lessons/2-arrays/cyclic_rotation/}
+ * <p>
+ * Find value that occurs in odd number of elements.
+ */
 public class CyclicRotation {
 
     public static class Solution {

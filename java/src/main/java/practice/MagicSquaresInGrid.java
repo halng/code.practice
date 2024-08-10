@@ -1,8 +1,11 @@
-package practice.leetcode;
+package practice;
 
 /**
- * @Input: 4 3 8 4 9 5 1 9 2 7 6 2
- * @Output: 1
+ * Source: LeetCode
+ * <p>
+ * {@code @Link: }
+ * <p>
+ * Find value that occurs in odd number of elements.
  */
 public class MagicSquaresInGrid {
 

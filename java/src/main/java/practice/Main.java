@@ -1,4 +1,4 @@
-package practice.leetcode;
+package practice;
 
 public class Main {
 
