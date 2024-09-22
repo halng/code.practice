@@ -31,8 +31,8 @@ public abstract class Evaluator {
     }
 
     private boolean compare(Object result, Object expected) {
-        if (result instanceof Object[] re && expected instanceof Object[] ex) {
-            return Arrays.deepEquals(re, ex);
+        if (result instanceof Object[] re) {
+            return Arrays.deepEquals(re, (Object[]) expected);
         }
         return result.equals(expected);
     }
