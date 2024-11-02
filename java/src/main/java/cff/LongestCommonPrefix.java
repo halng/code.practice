@@ -8,9 +8,7 @@ import java.util.List;
 public class LongestCommonPrefix extends Evaluator {
     @Override
     protected List<IO> getTestCase() {
-        return List.of(
-                new IO<>(new String[]{"flower", "flow", "flight"}, "fl"),
-                new IO<>(new String[]{"a"}, "a"));
+        return List.of(new IO<>(new String[]{"flower", "flow", "flight"}, "fl"), new IO<>(new String[]{"a"}, "a"));
     }
 
     @Override
